@@ -1,0 +1,2 @@
+TODO
+ * remove the bubble->visible attribute and turn the method calls into gdk_window_is_visible

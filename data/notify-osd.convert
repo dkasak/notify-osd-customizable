@@ -1,0 +1,3 @@
+[com.canonical.notify-osd]
+multihead-mode = /apps/notify-osd/multihead_mode
+gravity = /apps/notify-osd/gravity

@@ -1,0 +1,23 @@
+#!/bin/sh
+set -e
+
+case "$1" in
+    install|upgrade)
+        # avoid file conflict with notification-daemon
+        dpkg-divert --add --rename --package notify-osd --divert /usr/share/dbus-1/services/org.freedesktop.Notifications.service.notify-osd /usr/share/dbus-1/services/org.freedesktop.Notifications.service > /dev/null
+        ;;
+
+    abort-upgrade)
+        ;;
+
+    *)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 0
+        ;;
+esac
+
+#DEBHELPER#
+
+exit 0
+
+

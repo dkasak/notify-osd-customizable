@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.0"
+   width="128"
+   height="128"
+   id="svg2">
+  <defs
+     id="defs4" />
+  <path
+     d="M 17.968164,10.2822 L 85.916064,10.2822 C 91.868154,10.2822 96.659917,15.073956 96.659917,21.026049 C 96.659917,21.026049 97.620838,42.047758 120.77569,40.843706 C 95.39798,62.424026 96.659917,106.97395 96.659917,106.97395 C 96.659917,112.92604 91.868154,117.7178 85.916064,117.7178 L 17.968164,117.7178 C 12.016071,117.7178 7.2243136,112.92604 7.2243136,106.97395 L 7.2243136,21.026049 C 7.2243136,15.073956 12.016071,10.2822 17.968164,10.2822 z"
+     id="rect2383"
+     style="fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1" />
+  <rect
+     width="15"
+     height="57.960926"
+     rx="4.8162098"
+     ry="4.8162098"
+     x="46.587555"
+     y="23.52532"
+     id="rect3157"
+     style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none" />
+  <rect
+     width="15"
+     height="15"
+     rx="4.8162098"
+     ry="4.8162098"
+     x="46.587555"
+     y="89.250359"
+     id="rect3159"
+     style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none" />
+</svg>

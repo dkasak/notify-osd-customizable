@@ -1,0 +1,30 @@
+Noteworthy changes since last release (0.9.30):
+
+    * Mono-example don't compile (under Oneiric Ocelot)
+    * ported to gtk+ 3.x
+    * ported to libnotify 0.7.x
+    * updated C- and Python-examples
+
+----
+
+This is the inital version of the new notification daemon "notify osd" developed
+by Canonical's dx- and design-teams. It follows the freedesktop notification
+specification and introduces some new policies for streamlining the user-
+experience by discouraging the use of actions and timeouts. 
+
+C-, Python- and C#-examples demonstrating correct usage of notifications have
+been added. Have a look at the examples-directory. This accompanies the devel-
+oper guidelines availabled under:
+
+    https://wiki.ubuntu.com/NotificationDevelopmentGuidelines
+
+Noteworthy changes since last release (0.9.22):
+
+    * updating NEWS file now, fixes LP: #432486
+    * no long using hard-coded -Werror, fixes LP: #361788
+    * solved regression regarding throbbing-animation for
+      value-indicator, fixes LP: #435116 
+    * looking up gravity-gconf-key upon startup, fixes LP: #431200
+    * convert newline characters to spaces, fixes LP: #402247
+
+

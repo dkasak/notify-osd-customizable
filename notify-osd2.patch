@@ -1,0 +1,163 @@
+diff -ruN src_old/bubble.c src/bubble.c
+--- src_old/bubble.c
++++ src/bubble.c
+@@ -167,6 +167,9 @@
+ #define BUBBLE_CONTENT_BLUR_RADIUS 4
+ #define TEXT_DROP_SHADOW_SIZE      2
+ 
++gboolean BUBBLE_PREVENT_FADE   = FALSE;
++gboolean BUBBLE_CLOSE_ON_CLICK = FALSE;
++
+ //-- private functions ---------------------------------------------------------
+ 
+ static guint g_bubble_signals[LAST_SIGNAL] = { 0 };
+@@ -1599,15 +1602,23 @@
+ 	// sanity check
+ 	if (!window)
+ 		return;
+-
+-	// set an 1x1 input-region to allow click-through 
+-	region = cairo_region_create_rectangle (&rect);
+-	if (cairo_region_status (region) == CAIRO_STATUS_SUCCESS)
++	
++	if (!BUBBLE_CLOSE_ON_CLICK)
+ 	{
+-		gtk_widget_input_shape_combine_region (window, NULL);
+-		gtk_widget_input_shape_combine_region (window, region);
++		// set an 1x1 input-region to allow click-through 
++		region = cairo_region_create_rectangle (&rect);
++		if (cairo_region_status (region) == CAIRO_STATUS_SUCCESS)
++		{
++			gtk_widget_input_shape_combine_region (window, NULL);
++			gtk_widget_input_shape_combine_region (window, region);
++		}
++		cairo_region_destroy (region);
++	}
++	else
++	{
++		GdkWindow *window_ = gtk_widget_get_window (window);
++		gdk_window_set_events (window_, gdk_window_get_events (window_) | GDK_BUTTON_PRESS);
+ 	}
+-	cairo_region_destroy (region);
+ }
+ 
+ static void
+@@ -1697,7 +1708,7 @@
+ 	cairo_paint (cr);
+ 	cairo_set_operator (cr, CAIRO_OPERATOR_OVER);
+ 
+-	if (priv->prevent_fade || !priv->composited)
++	if (BUBBLE_PREVENT_FADE || priv->prevent_fade || !priv->composited)
+ 	{
+ 	        // render drop-shadow and bubble-background
+ 		_render_background (bubble, cr, 1.0f, 0.0f);
+@@ -1730,6 +1741,29 @@
+ }
+ 
+ static gboolean
++button_press_event_handler (GtkWidget* window G_GNUC_UNUSED, 
++          GdkEventButton* event, 
++          Bubble* bubble)
++{
++ BubblePrivate *priv = GET_PRIVATE (bubble);
++
++ if (priv->mouse_over && event->button == 1)
++ {
++   bubble_hide (bubble);
++
++   dbus_send_close_signal (bubble_get_sender (bubble),
++         bubble_get_id (bubble),
++         1);
++
++   g_signal_emit (bubble, g_bubble_signals[TIMED_OUT], 0);
++
++   return TRUE;
++ }
++
++ return FALSE;
++}
++
++static gboolean
+ redraw_handler (Bubble* bubble)
+ {
+ 	GtkWindow*     window;
+@@ -1753,7 +1787,7 @@
+ 
+ 	if (priv->alpha == NULL)
+ 	{
+-		if (priv->distance < 1.0f && !priv->prevent_fade)
++		if (priv->distance < 1.0f && !priv->prevent_fade && !BUBBLE_PREVENT_FADE)
+ 		{
+ 			gtk_window_set_opacity (window,
+ 			                        WINDOW_MIN_OPACITY +
+@@ -1908,7 +1942,7 @@
+ 
+ 		// mark mouse-pointer having left bubble and proximity-area
+ 		// after inital show-up of bubble
+-		if (priv->prevent_fade && priv->distance > 1.0f)
++		if (!BUBBLE_PREVENT_FADE && priv->prevent_fade && priv->distance > 1.0f)
+ 			priv->prevent_fade = FALSE;
+ 	}
+ 
+@@ -2204,6 +2238,14 @@
+ 			  G_CALLBACK (expose_handler),
+ 			  this);
+ 
++	if (BUBBLE_CLOSE_ON_CLICK)
++	{
++	  g_signal_connect (window,
++	        "button-press-event",
++	        G_CALLBACK (button_press_event_handler),
++	        this);
++	}
++
+ 	// "clear" input-mask, set title/icon/attributes
+ 	gtk_widget_set_app_paintable (window, TRUE);
+ 	gtk_window_set_title (GTK_WINDOW (window), "notify-osd");
+@@ -2683,7 +2725,7 @@
+ 
+ 	priv = GET_PRIVATE (self);
+ 
+-	if (priv->prevent_fade)
++	if (!BUBBLE_PREVENT_FADE && priv->prevent_fade)
+ 		return FALSE;
+ 
+ 	return priv->mouse_over;
+@@ -2787,7 +2829,7 @@
+ 
+ 	// check if mouse-pointer is over bubble (and proximity-area) initially
+ 	pointer_update (self);
+-	if (priv->distance <= 1.0f)
++	if (priv->distance <= 1.0f || BUBBLE_PREVENT_FADE)
+ 		priv->prevent_fade = TRUE;
+ 	else
+ 		priv->prevent_fade = FALSE;
+
+diff -ruN src_old/main.c src/main.c
+--- src_old/main.c
++++ src/main.c
+@@ -77,6 +77,9 @@
+ extern float DEFAULT_ICON_SIZE;
+ extern float DEFAULT_GAUGE_SIZE;
+ 
++extern gboolean BUBBLE_PREVENT_FADE;
++extern gboolean BUBBLE_CLOSE_ON_CLICK;
++
+ void parse_color(unsigned int c, float* r, float* g, float* b) 
+ {
+     *b = (float)(c & 0xFF) / (float)(0xFF);
+@@ -222,6 +225,14 @@
+                    sscanf(value, "%f", &fvalue) ) {
+             DEFAULT_GAUGE_SIZE = fvalue*0.1;
+             
++        } else if (!strcmp(key, "bubble-prevent-fade") &&
++                   sscanf(value, "%d", &ivalue) ) {
++            BUBBLE_PREVENT_FADE = ivalue;
++
++        } else if (!strcmp(key, "bubble-close-on-click") &&
++                   sscanf(value, "%d", &ivalue) ) {
++            BUBBLE_CLOSE_ON_CLICK = ivalue;
++
+         }
+         
+     }

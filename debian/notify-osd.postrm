@@ -1,0 +1,20 @@
+#! /bin/sh
+set -e
+
+case "$1" in
+    remove|purge)
+	# Remove our diversion
+        dpkg-divert --remove --rename --package notify-osd --divert /usr/share/dbus-1/services/org.freedesktop.Notifications.service.notify-osd /usr/share/dbus-1/services/org.freedesktop.Notifications.service > /dev/null
+	;;
+
+    upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+	;;
+
+    *)
+	echo "postrm called with unknown argument \`$1'" >&2
+	exit 0
+esac
+
+#DEBHELPER#
+
+exit 0
